@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,16 +35,36 @@ public final class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements A
      * Create an {@link AnnotatedArrayTypeImpl} from an existing {@link AnnotatedArrayType}
      * @param type {@link AnnotatedArrayType} to copy parameters from.
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is invalid</li>
-     * <li>When {@code type.}{@link AnnotatedType#getType() getType()} is not an array {@link Class} and not a {@link GenericArrayType}</li>
-     * <li>When {@code type.}{@link AnnotatedArrayType#getAnnotatedGenericComponentType() getAnnotatedGenericComponentType()}
-     *  is {@code null}</li>
-     * <li>When {@code type.}{@link AnnotatedArrayType#getAnnotatedGenericComponentType() getAnnotatedGenericComponentType()}
-     *  does not match {@code type.}{@link AnnotatedType#getType() getType()}'s component type</li></ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code type.}{@link AnnotatedType#getType() getType()} is not an array {@link Class} and not a {@link GenericArrayType}</li>
+     *   <li>When {@code type.}{@link AnnotatedArrayType#getAnnotatedGenericComponentType() getAnnotatedGenericComponentType()}
+     *     is {@code null}</li>
+     *   <li>When {@code type.}{@link AnnotatedArrayType#getAnnotatedGenericComponentType() getAnnotatedGenericComponentType()}
+     *     does not match {@code type.}{@link AnnotatedType#getType() getType()}'s component type</li>
+     * </ul>
      * @see AnnotatedTypeImpl#AnnotatedTypeImpl(AnnotatedType)
      */
     public AnnotatedArrayTypeImpl(AnnotatedArrayType type) {
-        super(type);
+        this(type, Utils.getAnnotations(type));
+    }
+
+    /**
+     * Create an {@link AnnotatedArrayTypeImpl} from an existing {@link AnnotatedArrayType}
+     * @param type {@link AnnotatedArrayType} to copy parameters from.
+     * @param annotations {@link Annotation}s to utilize for the {@link AnnotatedArrayType}
+     * @throws IllegalArgumentException <ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code type.}{@link AnnotatedType#getType() getType()} is not an array {@link Class} and not a {@link GenericArrayType}</li>
+     *   <li>When {@code type.}{@link AnnotatedArrayType#getAnnotatedGenericComponentType() getAnnotatedGenericComponentType()}
+     *     is {@code null}</li>
+     *   <li>When {@code type.}{@link AnnotatedArrayType#getAnnotatedGenericComponentType() getAnnotatedGenericComponentType()}
+     *     does not match {@code type.}{@link AnnotatedType#getType() getType()}'s component type</li>
+     * </ul>
+     * @see AnnotatedTypeImpl#AnnotatedTypeImpl(AnnotatedType)
+     * @since 1.1
+     */
+    public AnnotatedArrayTypeImpl(AnnotatedArrayType type, Annotation[] annotations) {
+        super(type, annotations);
         AnnotatedType compType = Utils.notNull(type.getAnnotatedGenericComponentType(), "type.getAnnotatedGenericComponentType()");
         Utils.checkMatching(getComponentType(), compType);
         this.genericComponentType = AnnotatedTypeFactory.recreateAnnotatedTypeForEquals(compType);
@@ -54,9 +74,10 @@ public final class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements A
      * Create a new {@link AnnotatedArrayTypeImpl} for the specified {@link Type}
      * @param type {@link Type} to decorate as an undecorated {@link AnnotatedArrayType}
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is {@code null}</li>
-     * <li>When {@code type} is a {@link Class} and is <strong>not</strong> an array type</li>
-     * <li>When {@code type} is not a {@link Class} and not a {@link GenericArrayType}</li></ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code type} is a {@link Class} and is <strong>not</strong> an array type</li>
+     *   <li>When {@code type} is not a {@link Class} and not a {@link GenericArrayType}</li>
+     * </ul>
      */
     public AnnotatedArrayTypeImpl(Type type) {
         this(type, null, EMPTY_ANNS);
@@ -67,8 +88,9 @@ public final class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements A
      * @param type {@link Type} to annotate
      * @param typeAnnotations {@link Annotation}s to annotate {@code type} with
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is invalid</li>
-     * <li>When {@code typeAnnotations} contains a {@code null}</li></ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code typeAnnotations} contains a {@code null}</li>
+     * </ul>
      * @see #AnnotatedArrayTypeImpl(Type)
      */
     public AnnotatedArrayTypeImpl(Type type, Annotation... typeAnnotations) {
@@ -81,10 +103,11 @@ public final class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements A
      * @param typeAnnotations {@link Annotation}s that annotate the array type
      * @param componentType {@link AnnotatedType} indicating the annotated component of the array
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is invalid</li>
-     * <li>When {@code typeAnnotations} contains a {@code null}</li>
-     * <li>When {@code componentType} is {@code null}</li>
-     * <li>When {@code type}'s component type does not equal {@code componentType}'s type</li></ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code typeAnnotations} contains a {@code null}</li>
+     *   <li>When {@code componentType} is {@code null}</li>
+     *   <li>When {@code type}'s component type does not equal {@code componentType}'s type</li>
+     * </ul>
      * @see #AnnotatedArrayTypeImpl(Type)
      */
     public AnnotatedArrayTypeImpl(Type type, Annotation[] typeAnnotations, AnnotatedType componentType) {
@@ -100,10 +123,11 @@ public final class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements A
      * @param arrayTypeAnns {@link Annotation}s that annotate the array type
      * @param componentTypeAnns {@link Annotation}s that annotate the array's component type.
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code arrayType} is {@code null}</li>
-     * <li>When {@code arrayType} is not an array {@link Class} and not a {@link GenericArrayType}</li>
-     * <li>When {@code arrayTypeAnns} contains a {@code null}</li>
-     * <li>When {@code componentTypeAnns} contains a {@code null}</li></ul>
+     *   <li>When {@code arrayType} is {@code null}</li>
+     *   <li>When {@code arrayType} is not an array {@link Class} and not a {@link GenericArrayType}</li>
+     *   <li>When {@code arrayTypeAnns} contains a {@code null}</li>
+     *   <li>When {@code componentTypeAnns} contains a {@code null}</li>
+     * </ul>
      */
     public AnnotatedArrayTypeImpl(Type type, Annotation[] arrayTypeAnns, Annotation... componentTypeAnns) {
         super(type, null, arrayTypeAnns);

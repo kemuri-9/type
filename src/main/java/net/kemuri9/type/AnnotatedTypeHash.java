@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,27 +23,27 @@ final class AnnotatedTypeHash {
 
     private AnnotatedTypeHash() {}
 
-    static final int hashCode(AnnotatedArrayTypeImpl impl) {
+    static int hashCode(AnnotatedArrayTypeImpl impl) {
         return Utils.hash(hashCode((AnnotatedTypeImpl) impl), 127, impl.genericComponentType);
     }
 
-    static final int hashCode(AnnotatedElementImpl impl) {
+    static int hashCode(AnnotatedElementImpl impl) {
         return Utils.hash(0, 127, impl.getClass(), impl.getAnnotations());
     }
 
-    static final int hashCode(AnnotatedParameterizedTypeImpl impl) {
+    static int hashCode(AnnotatedParameterizedTypeImpl impl) {
         return Utils.hash(hashCode((AnnotatedTypeImpl) impl), 127, (Object[]) impl.actualTypeArguments);
     }
 
-    static final int hashCode(AnnotatedTypeImpl impl) {
+    static int hashCode(AnnotatedTypeImpl impl) {
         return Utils.hash(hashCode((AnnotatedElementImpl) impl), 127, impl.getType(), impl.getAnnotatedOwnerType());
     }
 
-    static final int hashCode(AnnotatedTypeVariableImpl impl) {
+    static int hashCode(AnnotatedTypeVariableImpl impl) {
         return Utils.hash(hashCode((AnnotatedTypeImpl) impl), 127, (Object[]) impl.annotatedBounds);
     }
 
-    static final int hashCode(AnnotatedWildcardTypeImpl impl) {
+    static int hashCode(AnnotatedWildcardTypeImpl impl) {
         return Utils.hash(hashCode((AnnotatedTypeImpl) impl), 127, impl.lowerBounds, impl.upperBounds);
     }
 }

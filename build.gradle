@@ -16,8 +16,6 @@
 
 plugins {
     id 'java-library'
-    id 'maven-publish'
-    id 'signing'
     id 'jacoco'
     id 'com.github.hierynomus.license' version '0.16.1'
     id 'net.kemuri9.gradle.mrjar' version '1.0.0'
@@ -25,7 +23,7 @@ plugins {
 }
 
 group = 'net.kemuri9'
-version = '1.0.0'
+version = '1.1.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 repositories {
@@ -201,61 +199,4 @@ project.tasks.replace('jacocoTestCoverageVerification', JacocoCoverageVerificati
 check {
     finalizedBy jacocoTestReport // report is always generated after tests run
     finalizedBy jacocoTestCoverageVerification // enforce coverage checks
-}
-
-publishing {
-    repositories {
-        maven {
-            name 'mavenCentralStaging'
-            url 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            credentials {
-                username ossrhUsername
-                password ossrhPassword
-            }
-        }
-        maven {
-            name 'mavenCentralSnapshots'
-            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-            credentials {
-                username ossrhUsername
-                password ossrhPassword
-            }
-        }
-    }
-
-    publications {
-        pluginMaven(MavenPublication) {
-
-            from components.java
-            pom {
-                name = 'Type Implementations'
-                description = 'Small library implementing Java Types'
-                url = 'https://github.com/kemuri-9/type'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        name = 'Steven Walters'
-                        email = 'kemuri9@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://github.com/kemuri-9/type.git'
-                    developerConnection = 'scm:git:git://github.com/kemuri-9/type.git'
-                    url = 'https://github.com/kemuri-9/type/tree/master'
-                }
-            }
-        }
-    }
-}
-
-// sign all the artifacts
-signing {
-    required { isReleaseVersion }
-    useGpgCmd()
-    sign publishing.publications.pluginMaven
 }

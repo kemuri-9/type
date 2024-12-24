@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Arrays;
  */
 public final class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTypeVariable {
 
-    private static final AnnotatedType[] cloneBounds(TypeVariable<?> type) {
+    private static AnnotatedType[] cloneBounds(TypeVariable<?> type) {
         return AnnotatedTypeFactory.recreateAnnotatedTypesForEquals(type.getAnnotatedBounds());
     }
 
@@ -39,14 +39,32 @@ public final class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implement
      * Create a {@link AnnotatedTypeVariableImpl} from an existing {@link AnnotatedTypeVariable}
      * @param type {@link AnnotatedTypeVariable} to copy details from
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is invalid</li>
-     * <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is {@code null}</li>
-     * <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is empty</li>
-     * <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} contains a {@code null}</li></ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is {@code null}</li>
+     *   <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is empty</li>
+     *   <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} contains a {@code null}</li>
+     * </ul>
      * @see AnnotatedTypeImpl#AnnotatedTypeImpl(AnnotatedType)
      */
     public AnnotatedTypeVariableImpl(AnnotatedTypeVariable type) {
-        super(type);
+        this(type, Utils.getAnnotations(type));
+    }
+
+    /**
+     * Create a {@link AnnotatedTypeVariableImpl} from an existing {@link AnnotatedTypeVariable}
+     * @param type {@link AnnotatedTypeVariable} to copy details from
+     * @param annotations {@link Annotation}s to utilize for the {@link AnnotatedTypeVariable}
+     * @throws IllegalArgumentException <ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is {@code null}</li>
+     *   <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is empty</li>
+     *   <li>When {@code type.}{@link AnnotatedTypeVariable#getAnnotatedBounds() getAnnotatedBounds()} contains a {@code null}</li>
+     * </ul>
+     * @see AnnotatedTypeImpl#AnnotatedTypeImpl(AnnotatedType)
+     * @since 1.1
+     */
+    public AnnotatedTypeVariableImpl(AnnotatedTypeVariable type, Annotation[] annotations) {
+        super(type, annotations);
         AnnotatedType[] bounds = Utils.notEmpty(type.getAnnotatedBounds(), "type.getAnnotatedBounds()");
         // recreate types to have valid equals implementations
         this.annotatedBounds = AnnotatedTypeFactory.recreateAnnotatedTypesForEquals(bounds);
@@ -56,9 +74,10 @@ public final class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implement
      * Create a {@link AnnotatedTypeVariableImpl} from a {@link TypeVariable}
      * @param type {@link TypeVariable} to copy details from.
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is {@code null}</li>
-     * <li>When {@code type.}{@link TypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is {@code null}</li>
-     * <li>When {@code type.}{@link TypeVariable#getAnnotatedBounds() getAnnotatedBounds()} contains a {@code null}</li></ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code type.}{@link TypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is {@code null}</li>
+     *   <li>When {@code type.}{@link TypeVariable#getAnnotatedBounds() getAnnotatedBounds()} contains a {@code null}</li>
+     * </ul>
      */
     public AnnotatedTypeVariableImpl(TypeVariable<?> type) {
         super(Utils.notNull(type, "type"), null, type.getAnnotations());
@@ -72,8 +91,9 @@ public final class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implement
      * @param type {@link TypeVariable} to annotate.
      * @param annotations {@link Annotation}s indicating annotations on {@code type}
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is invalid</li>
-     * <li>When {@code annotations} contains a {@code null}</li></ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code annotations} contains a {@code null}</li>
+     * </ul>
      * @see #AnnotatedTypeVariableImpl(TypeVariable)
      */
     public AnnotatedTypeVariableImpl(TypeVariable<?> type, Annotation... annotations) {
@@ -89,9 +109,10 @@ public final class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implement
      * @param annotations {@link Annotation}s indicating annotations on {@code type}
      * @param boundsAnnotations user-supplied {@link Annotation}s for boundaries, overriding boundaries from {@code type}
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is invalid</li>
-     * <li>When {@code annotations} contains a {@code null}</li>
-     * <li>When any element of {@code boundsAnnotations} contains a {@code null}</li></ul>
+     *   <li>When {@code type} is invalid</li>
+     *   <li>When {@code annotations} contains a {@code null}</li>
+     *   <li>When any element of {@code boundsAnnotations} contains a {@code null}</li>
+     * </ul>
      * @see #AnnotatedTypeVariableImpl(TypeVariable)
      */
     public AnnotatedTypeVariableImpl(TypeVariable<?> type, Annotation[] annotations, Annotation[][] boundsAnnotations) {
@@ -120,10 +141,11 @@ public final class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implement
      * @param annotatedBoundaries user-supplied {@link AnnotatedType}s indicating the boundaries, overriding from {@code type}.
      *  {@code null} entries indicate no override for the relevant boundary
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is {@code null}</li>
-     * <li>When {@code type.}{@link TypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is invalid</li>
-     * <li>When {@code annotations} contains a {@code null}</li>
-     * <li>When {@code annotatedBoundaries} specifies an annotated type that does not match the respective boundary on {@code type}</li></ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code type.}{@link TypeVariable#getAnnotatedBounds() getAnnotatedBounds()} is invalid</li>
+     *   <li>When {@code annotations} contains a {@code null}</li>
+     *   <li>When {@code annotatedBoundaries} specifies an annotated type that does not match the respective boundary on {@code type}</li>
+     * </ul>
      * @see #AnnotatedTypeVariableImpl(TypeVariable)
      */
     public AnnotatedTypeVariableImpl(TypeVariable<?> type, Annotation[] annotations, AnnotatedType... annotatedBoundaries) {

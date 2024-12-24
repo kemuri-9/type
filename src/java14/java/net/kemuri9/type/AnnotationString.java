@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import java.util.StringJoiner;
 /**
  * In Java 14, there were minor changes to the toString from 9.
  * Some value representations were altered.
- * And singlular "value" only annotations have the name excluded
+ * And singular "value" only annotations have the name excluded
  */
 final class AnnotationString {
 
     static String getNamePrefix(Member[] members, Member curMember) {
-        // when there is only a single property and it is "value", then the "value=" is excluded
+        // when there is only a single property and its name is "value", then the "value=" is excluded
         String memberName = curMember.getName();
         return (members.length == 1 && "value".equals(memberName)) ? "" : (memberName + "=");
     }
@@ -42,7 +42,7 @@ final class AnnotationString {
             Byte b = (Byte) value;
             return String.format("(byte)0x%02x", b);
         } else if (value instanceof Character) {
-            Character c = (Character) value;
+            char c = (Character) value;
             StringBuilder sb = new StringBuilder(4);
             sb.append('\'');
             if (c == '\'') {
@@ -62,7 +62,7 @@ final class AnnotationString {
 
             return finalComponent.getName() + arrayBackets.toString() + ".class" ;
         } else if (value instanceof Double) {
-            Double d = (Double) value;
+            double d = (Double) value;
             if (Double.isFinite(d)) {
                 return Double.toString(d);
             } else if (Double.isInfinite(d)) {
@@ -71,7 +71,7 @@ final class AnnotationString {
                 return "0.0/0.0";
             }
         } else if (value instanceof Float) {
-            Float f = (Float) value;
+            float f = (Float) value;
             if (Float.isFinite(f)) {
                 return Float.toString(f) + "f";
             } else if (Float.isInfinite(f)) {
@@ -80,7 +80,7 @@ final class AnnotationString {
                 return "0.0f/0.0f";
             }
         } else if (value instanceof Long) {
-            Long l = (Long) value;
+            long l = (Long) value;
             String str = String.valueOf(l);
             return (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) ? (str + 'L') : str;
         } else if (value instanceof String) {

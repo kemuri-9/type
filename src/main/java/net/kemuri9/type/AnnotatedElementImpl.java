@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,10 @@ public class AnnotatedElementImpl implements AnnotatedElement {
      * Create a new {@link AnnotatedElementImpl} from an existing {@link AnnotatedElement}
      * @param element {@link AnnotatedElement} to copy parameters from
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code element} is {@code null}</li>
-     * <li>When {@code element.}{@link AnnotatedElement#getAnnotations() getAnnotations()} is {@code null}</li>
-     * <li>When {@code element.}{@link AnnotatedElement#getAnnotations() getAnnotations()} contains a {@code null}</li></ul>
+     *   <li>When {@code element} is {@code null}</li>
+     *   <li>When {@code element.}{@link AnnotatedElement#getAnnotations() getAnnotations()} is {@code null}</li>
+     *   <li>When {@code element.}{@link AnnotatedElement#getAnnotations() getAnnotations()} contains a {@code null}</li>
+     * </ul>
      */
     public AnnotatedElementImpl(AnnotatedElement element) {
         Utils.notNull(element, "element");

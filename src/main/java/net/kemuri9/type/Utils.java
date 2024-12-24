@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 package net.kemuri9.type;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -35,12 +32,12 @@ class Utils {
     /**
      * Utility function for converting an annotation array to string
      * @param annotations annotations to toString
-     * @param state of adding a prefix space.
+     * @param prefix state of adding a prefix space.
      *  {@code FALSE} indicates to add a postfix space.
      *  {@code null} indicates to add no additional space.
      * @return toString representation of the annotations
      */
-    static final String annsToString(Annotation[] annotations, Boolean prefix) {
+    static String annsToString(Annotation[] annotations, Boolean prefix) {
         if (annotations.length == 0) {
             return "";
         }
@@ -52,7 +49,7 @@ class Utils {
         return (prefix == null) ? str : (prefix ? (" " + str) : (str + " "));
     }
 
-    static final String annTypesToString(AnnotatedType[] types, String delimiter, String prefix, String suffix) {
+    static String annTypesToString(AnnotatedType[] types, String delimiter, String prefix, String suffix) {
         if (types.length == 0) {
             return "";
         }
@@ -104,8 +101,9 @@ class Utils {
      * @throws IllegalArgumentException When {@code annotated} does not represent {@code expected}
      */
     static <T extends AnnotatedType> T checkMatching(Type expected, T annotated) {
-        isTrue(expected.equals(annotated.getType()), annotated,
-                (t)-> t + "'s type does not match expected type " + expected);
+        if (!expected.equals(annotated.getType())) {
+            throw new IllegalArgumentException(annotated + "'s type does not match expected type " + expected);
+        }
         return annotated;
     }
 
@@ -161,6 +159,15 @@ class Utils {
         }
         Object val = args[idx];
         return type.isInstance(val) ? type.cast(val) : defValue;
+    }
+
+    /**
+     * Get the annotations on the type, performing checks similar to what {@link AnnotatedElementImpl} does
+     * @param type {@link AnnotatedType} to get its annotations
+     * @return annotations on the type
+     */
+    static Annotation[] getAnnotations(AnnotatedType type) {
+        return Utils.noNullContained(notNull(type, "type").getAnnotations(), "type.getAnnotations()");
     }
 
     static Type getOwnerType(Type type) {
@@ -258,12 +265,6 @@ class Utils {
         }
     }
 
-    static <T> void isTrue(boolean truth, T value, Function<T, String> error) {
-        if (!truth) {
-            throw new IllegalArgumentException(error.apply(value));
-        }
-    }
-
     /**
      * Validate that the object array is not null, and contains no null values
      * @param <T> Type of object held by the array
@@ -289,9 +290,10 @@ class Utils {
      * @param name name of the parameter being validated
      * @return validated object array
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code value} is {@code null}</li>
-     * <li>When {@code value} contains a {@code null}</li>
-     * <li>When {@code value} is empty</li></ul>
+     *   <li>When {@code value} is {@code null}</li>
+     *   <li>When {@code value} contains a {@code null}</li>
+     *   <li>When {@code value} is empty</li>
+     * </ul>
      */
     static <T> T[] notEmpty(T[] value, String name) {
         notNull(value, name);

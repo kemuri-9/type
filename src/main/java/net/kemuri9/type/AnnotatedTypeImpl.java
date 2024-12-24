@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,26 @@ public class AnnotatedTypeImpl extends AnnotatedElementImpl implements Annotated
      * <li>When instantiated directly and {@code type} does not represent a non-array {@link Class}</li></ul>
      */
     public AnnotatedTypeImpl(AnnotatedType type) {
-        super(type);
-        this.type = Utils.notNull(type.getType(), "type.getType()");
+        this(type, Utils.getAnnotations(type));
+    }
+
+    /**
+     * Create a new {@link AnnotatedTypeImpl} copying parameters from an existing {@link AnnotatedType}.
+     * Only basic {@link Class} type {@link AnnotatedType}s may be utilized in construction.
+     * @param type {@link AnnotatedType} to copy parameters from.
+     * @param annotations {@link Annotation}s to utilize for this {@link AnnotatedType} type
+     * @throws IllegalArgumentException <ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code type.}{@link AnnotatedType#getAnnotations() getAnnotations()} is {@code null}</li>
+     *   <li>When {@code type.}{@link AnnotatedType#getAnnotations() getAnnotations()} contains a {@code null}</li>
+     *   <li>When {@code type.}{@code getAnnotatedOwnerType()} does not match {@code type.}{@link AnnotatedType#getType() getType()}'s owner type</li>
+     *   <li>When instantiated directly and {@code type} does not represent a non-array {@link Class}</li>
+     * </ul>
+     * @since 1.1
+     */
+    public AnnotatedTypeImpl(AnnotatedType type, Annotation[] annotations) {
+        super(annotations);
+        this.type = Utils.notNull(Utils.notNull(type, "type").getType(), "type.getType()");
         checkType("type.getType()");
         this.ownerType = checkOwnerType(this.type, Utils.getOwnerType(this.type), AnnotatedTypeOwner.getAnnotatedOwnerType(type));
     }
@@ -69,8 +87,9 @@ public class AnnotatedTypeImpl extends AnnotatedElementImpl implements Annotated
      * Create a new {@link AnnotatedTypeImpl} for the specified {@link Class}
      * @param type {@link Class} to decorate as an undecorated {@link AnnotatedType}
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is {@code null}</li>
-     * <li>When {@code type} is an array type</li></ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code type} is an array type</li>
+     * </ul>
      */
     public AnnotatedTypeImpl(Class<?> type) {
         super();
@@ -85,9 +104,10 @@ public class AnnotatedTypeImpl extends AnnotatedElementImpl implements Annotated
      * @param ownerType {@link AnnotatedType} that possibly owns this type.
      * @param annotations {@link Annotation}s that annotate {@code type}
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is {@code null}</li>
-     * <li>When {@code ownerType} is not {@code null} and does not match {@code type}'s owner type</li>
-     * <li>when {@code annotations} contains a {@code null}</li></ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code ownerType} is not {@code null} and does not match {@code type}'s owner type</li>
+     *   <li>when {@code annotations} contains a {@code null}</li>
+     * </ul>
      */
     public AnnotatedTypeImpl(Type type, AnnotatedType ownerType, Annotation... annotations) {
         super(annotations);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ public class GenericArrayTypeImpl implements GenericArrayType {
      * Without this variant, then a cast to {@link Type} is required and can be a bit cumbersome
      * @param componentType {@link Type} representing the array's component type
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code componentType} is {@code null}</li>
-     * <li>When {@code componentType} is not a {@link GenericArrayType}, not a {@link ParameterizedType},
-     *  and not a {@link TypeVariable}</li></ul>
+     *   <li>When {@code componentType} is {@code null}</li>
+     *   <li>When {@code componentType} is not a {@link GenericArrayType}, not a {@link ParameterizedType},
+     *     and not a {@link TypeVariable}</li>
+     * </ul>
      * @return new {@link GenericArrayTypeImpl} with the specified component type
      * @see #GenericArrayTypeImpl(Type)
      */
@@ -49,8 +50,9 @@ public class GenericArrayTypeImpl implements GenericArrayType {
      * Create a new {@link GenericArrayTypeImpl} from an existing {@link GenericArrayType}
      * @param type {@link GenericArrayType} to copy details from
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code type} is {@code null}</li>
-     * <li>When {@code type.}{@link GenericArrayType#getGenericComponentType() getGenericComponentType()} is {@code null}</li></ul>
+     *   <li>When {@code type} is {@code null}</li>
+     *   <li>When {@code type.}{@link GenericArrayType#getGenericComponentType() getGenericComponentType()} is {@code null}</li>
+     * </ul>
      */
     public GenericArrayTypeImpl(GenericArrayType type) {
         genericComponentType = Utils.notNull(type, "type").getGenericComponentType();
@@ -67,9 +69,10 @@ public class GenericArrayTypeImpl implements GenericArrayType {
      */
     public GenericArrayTypeImpl(Type componentType) {
         Utils.notNull(componentType, "componentType");
-        Utils.isTrue(componentType instanceof ParameterizedType || componentType instanceof TypeVariable
-                || componentType instanceof GenericArrayType, componentType,
-                (t)-> t + " must be a GenericArrayType, a ParameterizedType, or a TypeVariable");
+        if (!(componentType instanceof ParameterizedType) && !(componentType instanceof TypeVariable)
+            && !(componentType instanceof GenericArrayType)) {
+            throw new IllegalArgumentException(componentType + " must be a GenericArrayType, a ParameterizedType, or a TypeVariable");
+        }
         this.genericComponentType = componentType;
     }
 

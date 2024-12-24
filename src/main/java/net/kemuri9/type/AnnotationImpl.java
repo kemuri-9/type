@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,51 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
 
     private static final long serialVersionUID = 6422587727334973151L;
 
-    private static interface Invoke<A> {
-        public A apply(A input, Method method) throws ReflectiveOperationException;
+    private interface Invoke<A> {
+        A apply(AnnotationImpl self, A input, Method method) throws ReflectiveOperationException;
+    }
+
+    private static final class Equals implements Invoke<Boolean> {
+
+        private final Object right;
+
+        private Equals(Object right) {
+            this.right = right;
+        }
+
+        @Override
+        public Boolean apply(AnnotationImpl self, Boolean equals, Method method) throws ReflectiveOperationException {
+            if (!equals) {
+                return Boolean.FALSE;
+            }
+            Object left = method.invoke(self);
+            Object right = method.invoke(this.right);
+            /* annotations cannot have nulls in practice, but with custom implementations like this,
+             * the system can become a bit broken */
+            return left != null && right != null && Utils.isBasicEquals(left, right);
+        }
+    }
+
+    private static final class HashCode implements Invoke<Integer> {
+
+        static final HashCode INSTANCE = new HashCode();
+
+        @Override
+        public Integer apply(AnnotationImpl self, Integer input, Method method) throws ReflectiveOperationException {
+            int thisHash = 127 * method.getName().hashCode();
+            Object value = method.invoke(self);
+            return input + (Utils.hashCode(value) ^ thisHash);
+        }
+    }
+
+    private static final class ToString implements Invoke<StringJoiner> {
+
+        static final ToString INSTANCE = new ToString();
+
+        @Override
+        public StringJoiner apply(AnnotationImpl self, StringJoiner input, Method method) throws ReflectiveOperationException {
+            return input.add(AnnotationString.getNamePrefix(self.members, method) + AnnotationString.toString(method.invoke(self)));
+        }
     }
 
     /** {@link Annotation} {@link Class} that is represented */
@@ -69,25 +112,12 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
             return false;
         }
 
-        return processProperties(Boolean.TRUE, (equals, m) -> {
-            if (!equals) {
-                return Boolean.FALSE;
-            }
-            Object left = m.invoke(this);
-            Object right = m.invoke(object);
-            /* annotations cannot have nulls in practice, but with custom implementations like this,
-             * the system can become a bit broken */
-            return left != null && right != null && Utils.isBasicEquals(left, right);
-        });
+        return processProperties(Boolean.TRUE, new Equals(o));
     }
 
     @Override
     public int hashCode() {
-        return processProperties(0, (a, m)-> {
-            int thisHash = 127 * m.getName().hashCode();
-            Object value = m.invoke(this);
-            return a + (Utils.hashCode(value) ^ thisHash);
-        });
+        return processProperties(0, HashCode.INSTANCE);
     }
 
     /**
@@ -103,14 +133,14 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
              * AnnotationType or the ConstantPool. And attempting to access either gets into a bit of a tricky situation
              * with accesses as they are not part of the JDK API, but internal APIs.
              * So order the members by name to get a consistent ordering across runs, which will likely be different
-             * than the order of the JVM */
+             * from the order of the JVM */
             members = annotationType.getDeclaredMethods();
             Arrays.sort(members, Comparator.comparing(Method::getName));
         }
         for (Method method : members) {
             try {
                 // TODO: need to evaluate when, if it all, it is necessary to setAccessible(true)
-                accumulative = process.apply(accumulative, method);
+                accumulative = process.apply(this, accumulative, method);
             } catch (ReflectiveOperationException | SecurityException ex) {
                 throw new UnsupportedOperationException("invalid annotation " + ex);
             }
@@ -121,8 +151,7 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(", ", "@" + annotationType.getName() + "(", ")");
-        processProperties(joiner, (sj, m)->
-            sj.add(AnnotationString.getNamePrefix(members, m) + AnnotationString.toString(m.invoke(this))));
+        processProperties(joiner, ToString.INSTANCE);
         return joiner.toString();
     }
 }

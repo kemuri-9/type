@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,9 @@ public class ParameterizedTypeImpl implements ParameterizedType {
      * Create a {@link ParameterizedTypeImpl} with the specified parameters
      * @param parameterizedType {@link ParameterizedType} to copy details from
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code parameterizedType} is {@code null}</li>
-     * <li>When {@code parameterizedType} is invalid</li></ul>
+     *   <li>When {@code parameterizedType} is {@code null}</li>
+     *   <li>When {@code parameterizedType} is invalid</li>
+     * </ul>
      * @see #ParameterizedTypeImpl(Type, Type, Type...)
      */
     public ParameterizedTypeImpl(ParameterizedType parameterizedType) {
@@ -55,9 +56,10 @@ public class ParameterizedTypeImpl implements ParameterizedType {
      * @param rawType {@link Type} that is being parameterized
      * @param actualTypeArguments {@link Type} arguments that parameterize {@code rawType}
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code rawType} is {@code null}</li>
-     * <li>When {@code actualTypeArguments} is {@code null}</li>
-     * <li>When {@code actualTypeArguments} contains a {@code null}</li></ul>
+     *   <li>When {@code rawType} is {@code null}</li>
+     *   <li>When {@code actualTypeArguments} is {@code null}</li>
+     *   <li>When {@code actualTypeArguments} contains a {@code null}</li>
+     * </ul>
      */
     public ParameterizedTypeImpl(Type ownerType, Type rawType, Type... actualTypeArguments) {
         this.ownerType = ownerType;
@@ -127,7 +129,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         for (Type t : actualTypeArguments) {
             sj.add(t.getTypeName());
         }
-        sb.append(sj.toString());
+        sb.append(sj);
 
         return sb.toString();
     }

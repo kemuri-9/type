@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,10 @@ public class TestUtils {
     }
 
     public static void assertThrows(Class<? extends Throwable> exType, Iterable<Executable> executables) {
+        int idx = -1;
         for (Executable exec : executables) {
-            Assertions.assertThrows(exType, exec);
+            ++idx;
+            Assertions.assertThrows(exType, exec, "Executable at index " + idx + " failed to throw " + exType);
         }
     }
 

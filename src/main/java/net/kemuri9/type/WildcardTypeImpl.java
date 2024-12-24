@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ public class WildcardTypeImpl implements WildcardType {
      * @param types {@link Type}s that are bound as {@code extends} ("upper bounds")
      * @return new {@link WildcardTypeImpl} representing the specified extends (upper) bounds.
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code types} is {@code null}</li>
-     * <li>When {@code types} is empty</li>
-     * <li>When {@code types} contains a {@code null}</li></ul>
+     *   <li>When {@code types} is {@code null}</li>
+     *   <li>When {@code types} is empty</li>
+     *   <li>When {@code types} contains a {@code null}</li>
+     * </ul>
      */
     public static WildcardTypeImpl forExtends(Type... types) {
         Utils.notEmpty(types, "types");
@@ -49,9 +50,10 @@ public class WildcardTypeImpl implements WildcardType {
      * @param types {@link Type}s that are bound as {@code super} ("lower bounds")
      * @return new {@link WildcardTypeImpl} representing the specified super (lower) bounds.
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code types} is {@code null}</li>
-     * <li>When {@code types} is empty</li>
-     * <li>When {@code types} contains a {@code null}</li></ul>
+     *   <li>When {@code types} is {@code null}</li>
+     *   <li>When {@code types} is empty</li>
+     *   <li>When {@code types} contains a {@code null}</li>
+     * </ul>
      */
     public static WildcardTypeImpl forSuper(Type... types) {
         Utils.notEmpty(types, "types");
@@ -72,8 +74,9 @@ public class WildcardTypeImpl implements WildcardType {
      * Create a new {@link WildcardTypeImpl} copying details from an existing one
      * @param wcType {@link WildcardType} to copy details from
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code wcType} is {@code null}</li>
-     * <li>When {@code wcType} is invalid</li></ul>
+     *   <li>When {@code wcType} is {@code null}</li>
+     *   <li>When {@code wcType} is invalid</li>
+     * </ul>
      * @see #WildcardTypeImpl(Type[], Type[])
      */
     public WildcardTypeImpl(WildcardType wcType) {
@@ -85,10 +88,11 @@ public class WildcardTypeImpl implements WildcardType {
      * @param lowerBounds {@link Type}s representing the lower bounds ({@code super})
      * @param upperBounds {@link Type}s representing the upper bounds ({@code extends})
      * @throws IllegalArgumentException <ul>
-     * <li>When {@code lowerBounds} contains a {@code null}</li>
-     * <li>When {@code upperBounds} contains a {@code null}</li>
-     * <li>When {@code lowerBounds} is specified and {@code upperBounds} represents
-     *  something other than solely extending from {@code Object}</li></ul>
+     *   <li>When {@code lowerBounds} contains a {@code null}</li>
+     *   <li>When {@code upperBounds} contains a {@code null}</li>
+     *   <li>When {@code lowerBounds} is specified and {@code upperBounds} represents
+     *      something other than solely extending from {@code Object}</li>
+     * </ul>
      */
     public WildcardTypeImpl(Type[] lowerBounds, Type[] upperBounds) {
         // clone non-null values, but otherwise use the base empty
