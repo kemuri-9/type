@@ -28,15 +28,15 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
 
     private static final long serialVersionUID = 6422587727334973151L;
 
-    private interface Invoke<A> {
+    interface Invoke<A> {
         A apply(AnnotationImpl self, A input, Method method) throws ReflectiveOperationException;
     }
 
-    private static final class Equals implements Invoke<Boolean> {
+    static final class Equals implements Invoke<Boolean> {
 
         private final Object right;
 
-        private Equals(Object right) {
+        Equals(Object right) {
             this.right = right;
         }
 
@@ -53,7 +53,7 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
         }
     }
 
-    private static final class HashCode implements Invoke<Integer> {
+    static final class HashCode implements Invoke<Integer> {
 
         static final HashCode INSTANCE = new HashCode();
 
@@ -65,7 +65,7 @@ public class AnnotationImpl implements Annotation, java.io.Serializable {
         }
     }
 
-    private static final class ToString implements Invoke<StringJoiner> {
+    static final class ToString implements Invoke<StringJoiner> {
 
         static final ToString INSTANCE = new ToString();
 

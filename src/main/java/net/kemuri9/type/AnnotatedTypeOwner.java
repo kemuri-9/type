@@ -29,23 +29,22 @@ final class AnnotatedTypeOwner {
     /**
      * Type to store the result of the lookup as well as if the lookup operation succeeded.
      */
-    private static final class OwnerTypeLookup {
+    static final class OwnerTypeLookup {
         /** constant for the FAILED scenario */
         private static final OwnerTypeLookup FAILED = new OwnerTypeLookup();
 
         final AnnotatedType owner;
-        final boolean succeded;
+        final boolean succeeded;
 
-        private OwnerTypeLookup(AnnotatedType owner) {
+        OwnerTypeLookup(AnnotatedType owner) {
             this.owner = owner;
-            this.succeded = true;
+            this.succeeded = true;
         }
 
-        private OwnerTypeLookup() {
+        OwnerTypeLookup() {
             this.owner = null;
-            this.succeded = false;
+            this.succeeded = false;
         }
-
     }
 
     static AnnotatedType getAnnotatedOwnerType(AnnotatedType type) {
@@ -72,7 +71,7 @@ final class AnnotatedTypeOwner {
         AnnotatedType leftOwner = left.getAnnotatedOwnerType();
         OwnerTypeLookup rightLookup = lookupAnnotatedOwnerType(right);
         // when it does, then it can be used as-is
-        if (rightLookup.succeded) {
+        if (rightLookup.succeeded) {
             return Objects.equals(leftOwner, rightLookup.owner);
         }
         /* but when there is no available annotated owner, the right's type's owner

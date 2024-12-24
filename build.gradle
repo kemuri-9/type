@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Steven Walters
+ * Copyright 2022-2024 Steven Walters
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ plugins {
     id 'jacoco'
     id 'com.github.hierynomus.license' version '0.16.1'
     id 'net.kemuri9.gradle.mrjar' version '1.0.0'
-    id 'biz.aQute.bnd.builder' version '6.0.0'
+    id 'biz.aQute.bnd.builder' version '7.0.0' // requires Java 17
 }
 
 group = 'net.kemuri9'
 version = '1.1.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+ext.name = 'Type Implementations'
+ext.description = 'Small library implementing Java Types'
 
 repositories {
     mavenLocal()
@@ -151,10 +153,6 @@ java9Test {
     check.dependsOn "java${verNum}Test"
 }
 
-java15Test {
-    //jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=10999'
-}
-
 configurations {
     sourcesElements.attributes {
         attribute TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8
@@ -175,7 +173,6 @@ jar {
     manifest {
         attributes('-exportcontents': 'net.kemuri9.type.*',
             // https://github.com/bndtools/bnd/issues/2227
-            '-fixupmessages': '^Classes found in the wrong directory: .*',
             'Bundle-Name': 'kemuri9 Type Implementations',
             'Bundle-SymbolicName': 'kemuri9-type',
             'Bundle-DocURL': 'https://github.com/kemuri-9/type',
